@@ -53,7 +53,8 @@ class ExpandableCardView @JvmOverloads constructor(context: Context, attrs: Attr
     private var innerViewRes: Int = 0
     private var iconDrawable: Drawable? = null
 
-    var animDuration = DEFAULT_ANIM_DURATION.toLong()
+    private var animDuration = DEFAULT_ANIM_DURATION.toLong()
+    private var animDurationStartup = animDuration
 
     var isExpanded = false
         private set
@@ -200,6 +201,21 @@ class ExpandableCardView @JvmOverloads constructor(context: Context, attrs: Attr
 
         arrowAnimation.fillAfter = true
 
+        expandAnimation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                // capture the initial height, otherwise the titlebar disappears when startExpanded=true
+                if (startExpandedInitialize) {
+                    previousHeight = card_layout.measuredHeight
+                    startExpandedInitialize = false
+                }
+            }
+
+            override fun onAnimationStart(animation: Animation?) {
+            }
+        })
 
         arrowAnimation.duration = animDuration
         expandAnimation.duration = animDuration
